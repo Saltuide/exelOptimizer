@@ -27,18 +27,24 @@ class Optimizer:
                     continue
 
                 try:
-                    strings = re.sub('\W', ' ', cell.value).split()
-                except TypeError:
+                    value = cell.value.replace('_', '$%%$')
+                    strings = re.sub('\W', ' ', value).split()
+                    delimiters = re.sub('\w', '', value).replace('$%%$', '_')
+                except Exception:
                     continue
 
-                new_values = []
-                for string in strings:
+                new_value = ''
+                for counter, string in enumerate(strings):
                     if self.is_string(string):
-                        new_values.append(self.check_spelling(string))
+                        new_value += self.check_spelling(string)
+                        if counter < len(delimiters):
+                            new_value += delimiters[counter]
                     else:
-                        new_values.append(string)
+                        new_value += string
+                        if counter < len(delimiters):
+                            new_value += delimiters[counter]
 
-                sheet.cell(row=i, column=j).value = ' '.join(new_values)
+                sheet.cell(row=i, column=j).value = new_value
 
 
     def a(self):
