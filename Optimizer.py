@@ -4,6 +4,8 @@ from openpyxl import Workbook
 from openpyxl.worksheet.worksheet import Worksheet, Cell
 from spellchecker import SpellChecker
 
+from AbbreviationFixer import AbbreviationFixer
+
 UNDEFINED_CELL = 'NA'
 
 
@@ -13,6 +15,7 @@ class Optimizer:
     def __init__(self, file: Workbook):
         self.file = file
         self.spell_checker = SpellChecker(language='ru')
+        self.abbreviation_fixer = AbbreviationFixer(self.spell_checker)
 
     def strip(self, cell: Cell) -> None:
         """
@@ -52,6 +55,9 @@ class Optimizer:
         :param value: Строка для исправления ошибок
         :return: Исправленная строка
         """
+        if len(value) < 3:
+            return value
+
         return self.spell_checker.correction(value)
 
     def create_new_cell_value(self, strings: list, delimiters: str) -> str:
@@ -99,7 +105,8 @@ class Optimizer:
                 except Exception:
                     continue
 
-                cell.value = self.create_new_cell_value(strings, delimiters)
+                new_cell_value = self.create_new_cell_value(strings, delimiters)
+                cell.value = self.abbreviation_fixer.correct_abbreviation(new_cell_value)
 
     def a(self):
         sheet = self.file.active
