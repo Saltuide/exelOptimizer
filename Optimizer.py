@@ -96,6 +96,7 @@ class Optimizer:
 
                 if cell.value is None or cell.value == '':
                     self.set_cell_not_null(cell)
+                    self.abbreviation_fixer.update_abbr_counter(None, j, sheet.max_column)
                     continue
 
                 try:
@@ -103,10 +104,13 @@ class Optimizer:
                     strings = re.sub('\W', ' ', value).split()
                     delimiters = re.sub('\w', '', value).replace('$%%$', '_')
                 except Exception:
+                    self.abbreviation_fixer.update_abbr_storage(None, j)
                     continue
 
                 new_cell_value = self.create_new_cell_value(strings, delimiters)
                 cell.value = self.abbreviation_fixer.correct_abbreviation(new_cell_value)
+                self.abbreviation_fixer.update_abbr_counter(cell.value, j, sheet.max_column)
+        self.abbreviation_fixer.create_cols_for_abbrs(sheet)
 
     def a(self):
         sheet = self.file.active
