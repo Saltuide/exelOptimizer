@@ -4,6 +4,8 @@ from typing import Optional
 from openpyxl.worksheet.worksheet import Worksheet
 from spellchecker import SpellChecker
 
+from Utils import Utils
+
 
 # noinspection PyMethodMayBeStatic
 class AbbreviationFixer:
@@ -36,7 +38,7 @@ class AbbreviationFixer:
             if value == '':
                 continue
 
-            new_value += self.spell_checker.correction(value.strip())
+            new_value += self.spell_checker.correction(value)
         return new_value
 
     def update_abbr_storage(self, value: Optional[str], index: int) -> None:
@@ -87,6 +89,12 @@ class AbbreviationFixer:
         if self._is_abbr_last_in_cell(cell_value, column_index):
             self.abbr_counter[column_index][0] += 1
 
+    def create_new_value_for_old_cell(self, old_value: str, new_value: str) -> str:
+        if new_value is None:
+            return old_value
+
+        return ''.join(old_value.rsplit(new_value, 1))
+
     def create_cols_for_abbrs(self, sheet: Worksheet) -> None:
         for key, value in self.abbr_counter.items():
             clean_rows = value[2] - value[1]
@@ -96,6 +104,9 @@ class AbbreviationFixer:
             sheet.insert_cols(key + 1)
             abbrs = self.abbr_storage[key]
             for i in range(2, sheet.max_row + 1):
-                ceil = sheet.cell(i, key + 1)
+                cell = sheet.cell(i, key + 1)
+                cell.border = Utils.get_thin_border()
                 new_value = 'NA' if abbrs[i - 2] is None else abbrs[i - 2]
-                ceil.value = new_value
+                cell.value = new_value
+                old_cell = sheet.cell(i, key)
+                old_cell.value = self.create_new_value_for_old_cell(old_cell.value, abbrs[i - 2])
