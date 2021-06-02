@@ -8,6 +8,7 @@ from skimage.measure import label, regionprops
 from openpyxl.worksheet.worksheet import Worksheet, Cell
 from openpyxl.utils import get_column_letter
 
+from Optimizer import Optimizer
 
 class TableSeparator:
 
@@ -57,8 +58,9 @@ class TableSeparator:
 
     def _copy_cell(self, old_cell: Cell, new_cell: Cell) -> NoReturn:
         new_cell.value = old_cell.value
-        new_cell.style = old_cell.style
+        new_cell.style = copy(old_cell.style)
         new_cell.border = copy(old_cell.border)
+        new_cell.font = copy(old_cell.font)
 
     def _set_proper_cols_width(self, sheet: Worksheet) -> NoReturn:
         dims = {}
@@ -94,4 +96,8 @@ class TableSeparator:
             self._transfer_data_to_new_sheet(active_sheet, new_sheet, borders)
             self._set_proper_cols_width(new_sheet)
 
+        wb.remove_sheet(active_sheet)
         wb.save('Files/test.xlsx')
+
+        optimizer = Optimizer(wb)
+        optimizer.a()

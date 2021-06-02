@@ -92,8 +92,15 @@ class AbbreviationFixer:
     def create_new_value_for_old_cell(self, old_value: str, new_value: str) -> str:
         if new_value is None:
             return old_value
+        return_value = old_value
+        try:
+            return_value = ''.join(old_value.rsplit(new_value, 1))
 
-        return ''.join(old_value.rsplit(new_value, 1))
+        except AttributeError:
+            #?????????????????
+            print(new_value)
+        finally:
+            return return_value
 
     def create_cols_for_abbrs(self, sheet: Worksheet) -> None:
         for key, value in self.abbr_counter.items():

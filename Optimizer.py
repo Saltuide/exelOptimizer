@@ -113,6 +113,6 @@ class Optimizer:
         self.abbreviation_fixer.create_cols_for_abbrs(sheet)
 
     def a(self):
-        sheet = self.file.active
-        self.sheet_spelling_lopper(sheet)
-        self.file.save('Files/new-main.xlsx')
+        for sheet in self.file.worksheets:
+            self.sheet_spelling_lopper(sheet)
+            self.file.save('Files/new-main.xlsx')
