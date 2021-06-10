@@ -1,10 +1,10 @@
-import pandas as pd
-import numpy as np
+from pandas import read_excel
+from numpy import array
 from typing import NoReturn
 from copy import copy
 
-import openpyxl
 from skimage.measure import label, regionprops
+from openpyxl import load_workbook
 from openpyxl.worksheet.worksheet import Worksheet, Cell
 from openpyxl.utils import get_column_letter
 
@@ -32,7 +32,7 @@ class TableSeparator:
 
     def open_file(self):
         try:
-            self.df = pd.read_excel('Files/main.xlsx', index_col=None, header=None)
+            self.df = read_excel('Files/main.xlsx', index_col=None, header=None)
         except FileNotFoundError:
             print("Не удалось открыть файл")
 
@@ -44,7 +44,7 @@ class TableSeparator:
     def get_tables_borders(self):
         self.open_file()
 
-        binary_representation = np.array(self.df.notnull().astype('int'))
+        binary_representation = array(self.df.notnull().astype('int'))
 
         list_of_dataframes = []
         connected_df = label(binary_representation)
@@ -87,7 +87,7 @@ class TableSeparator:
     def separate_tables_to_different_worksheets(self):
         if len(self.table_borders) < 2:
             return
-        wb = openpyxl.load_workbook(self.file, data_only=True)
+        wb = load_workbook(self.file, data_only=True)
         active_sheet = wb.active
         for table_index, borders in self.table_borders.items():
             title = f'New Worksheet number {table_index + 1}'

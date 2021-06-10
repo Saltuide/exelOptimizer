@@ -1,4 +1,4 @@
-import re
+from re import split
 from typing import Optional
 
 from openpyxl.worksheet.worksheet import Worksheet
@@ -29,7 +29,7 @@ class AbbreviationFixer:
         :return: новое значение ячейки
         """
         new_value = ''
-        values = re.split('(\d+)', string)
+        values = split('(\d+)', string)
         for value in values:
             if value.isnumeric():
                 new_value += value
@@ -53,7 +53,7 @@ class AbbreviationFixer:
         :param cell_value: значение ячейки
         :return: True, если сокращение - последнее. Иначе False
         """
-        values = re.split('(\d+)', cell_value)
+        values = split('(\d+)', cell_value)
         pseudo_last_value = values[-1].strip()
         if column_index not in self.abbr_storage:
             self.abbr_storage[column_index] = []

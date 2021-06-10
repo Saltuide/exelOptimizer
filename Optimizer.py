@@ -1,4 +1,4 @@
-import re
+from re import sub
 
 from openpyxl import Workbook
 from openpyxl.worksheet.worksheet import Worksheet, Cell
@@ -101,8 +101,8 @@ class Optimizer:
 
                 try:
                     value = cell.value.replace('_', '$%%$')
-                    strings = re.sub('\W', ' ', value).split()
-                    delimiters = re.sub('\w', '', value).replace('$%%$', '_')
+                    strings = sub('\W', ' ', value).split()
+                    delimiters = sub('\w', '', value).replace('$%%$', '_')
                 except Exception:
                     self.abbreviation_fixer.update_abbr_storage(None, j)
                     continue
@@ -115,4 +115,5 @@ class Optimizer:
     def a(self):
         for sheet in self.file.worksheets:
             self.sheet_spelling_lopper(sheet)
-            self.file.save('Files/new-main.xlsx')
+
+        self.file.save('Files/new-main.xlsx')
